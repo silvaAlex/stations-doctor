@@ -9,7 +9,7 @@ interface IExpediente {
 }
 
 export interface IMedico {
-  username: string
+  nomeMedico: string
   crm: string
   especialidade: string
   expediente: IExpediente
@@ -21,13 +21,13 @@ export class MedicoRepository {
 
     if (medicoExist) return
 
-    if (medico.username === null || medico.username === undefined) return
+    if (medico.nomeMedico === null || medico.nomeMedico === undefined) return
 
     if (medico.crm === null || medico.crm === undefined) return
 
     return await prismaClient.medico.create({
       data: {
-        username: medico.username,
+        nomeMedico: medico.nomeMedico,
         crm: medico.crm,
         especialidade: medico.especialidade,
         expediente: JSON.stringify(medico.expediente),
@@ -55,7 +55,7 @@ export class MedicoRepository {
         crm: true,
         consulta: true,
         especialidade: true,
-        username: true,
+        nomeMedico: true,
         expediente: true,
       },
     })

@@ -8,7 +8,7 @@ interface IExpediente {
 
 export interface MedicoDTO {
   id?: string
-  username: string
+  nomeMedico: string
   crm: string
   especialidade: string
   expediente: IExpediente

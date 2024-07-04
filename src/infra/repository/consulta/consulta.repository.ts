@@ -10,7 +10,7 @@ export class ConsultaRepository {
   async register(consulta: IConsulta) {
     return await prismaClient.consulta.create({
       data: {
-        appointmentDateTime: consulta.dataAgendamento,
+        dataAgendamento: consulta.dataAgendamento,
         medicoId: consulta.medicoId,
         pacienteId: consulta.pacienteId,
       },
@@ -23,7 +23,7 @@ export class ConsultaRepository {
         medicoId,
       },
       select: {
-        appointmentDateTime: true,
+        dataAgendamento: true,
         medico: {
           select: {
             expediente: true,
@@ -43,11 +43,11 @@ export class ConsultaRepository {
         },
       },
       select: {
-        appointmentDateTime: true,
+        dataAgendamento: true,
         paciente: {
           select: {
-            username: true,
-            birthDay: true,
+            nomePaciente: true,
+            dataNascimento: true,
           },
         },
       },
@@ -64,10 +64,10 @@ export class ConsultaRepository {
         },
       },
       select: {
-        appointmentDateTime: true,
+        dataAgendamento: true,
         medico: {
           select: {
-            username: true,
+            nomeMedico: true,
             especialidade: true,
           },
         },
@@ -81,7 +81,7 @@ export class ConsultaRepository {
     return await prismaClient.consulta.findFirst({
       where: {
         medicoId: consulta.medicoId,
-        appointmentDateTime: consulta.dataAgendamento,
+        dataAgendamento: consulta.dataAgendamento,
       },
     })
   }

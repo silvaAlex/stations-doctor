@@ -1,7 +1,7 @@
 interface IPacienteDTO {
   id?: string
-  birthDay: Date
-  username: string
+  dataNascimento: Date
+  nomePaciente: string
   cpf: string
 }
 

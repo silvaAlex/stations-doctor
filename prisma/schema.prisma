@@ -8,30 +8,30 @@ datasource db {
 }
 
 model Paciente {
-  id        String     @id @default(uuid())
-  createdAt DateTime   @default(now())
-  birthDay  DateTime
-  username  String
-  cpf       String     @unique
-  consulta  Consulta[]
+  id             String     @id @default(uuid())
+  createdAt      DateTime   @default(now())
+  cpf            String     @unique
+  dataNascimento DateTime
+  nomePaciente   String
+  consulta       Consulta[]
 }
 
 model Medico {
   id            String     @id @default(uuid())
   createdAt     DateTime   @default(now())
-  username      String
   crm           String     @unique
   especialidade String
   expediente    String
+  nomeMedico    String
   consulta      Consulta[]
 }
 
 model Consulta {
-  id                  String   @id @default(uuid())
-  createdAt           DateTime @default(now())
-  appointmentDateTime DateTime
-  medicoId            String
-  pacienteId          String
-  medico              Medico   @relation(fields: [medicoId], references: [id])
-  paciente            Paciente @relation(fields: [pacienteId], references: [id])
+  id              String   @id @default(uuid())
+  createdAt       DateTime @default(now())
+  medicoId        String
+  pacienteId      String
+  dataAgendamento DateTime
+  medico          Medico   @relation(fields: [medicoId], references: [id])
+  paciente        Paciente @relation(fields: [pacienteId], references: [id])
 }

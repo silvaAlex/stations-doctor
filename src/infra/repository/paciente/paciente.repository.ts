@@ -1,8 +1,8 @@
 import { prismaClient } from '../../../../prisma/prismaClient'
 
 interface IPaciente {
-  birthDay: Date
-  username: string
+  dataNascimento: Date
+  nomePaciente: string
   cpf: string
 }
 
@@ -12,15 +12,15 @@ export class PacienteRepository {
 
     if (pacienteExist) return pacienteExist
     else {
-      if (paciente.username === null || paciente.username === undefined) return
+      if (paciente.nomePaciente === null || paciente.nomePaciente === undefined) return
 
       if (paciente.cpf === null || paciente.cpf === undefined) return
 
       return await prismaClient.paciente.create({
         data: {
-          username: paciente.username,
+          nomePaciente: paciente.nomePaciente,
           cpf: paciente.cpf,
-          birthDay: paciente.birthDay,
+          dataNascimento: paciente.dataNascimento,
         },
       })
     }
