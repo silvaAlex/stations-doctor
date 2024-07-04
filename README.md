@@ -24,8 +24,8 @@ Trata-se de uma aplicação que permite o agendamento de Consultas Médicas
  
 ### Rota de Cadastro de Consulta
 
-- [ ] Permite agendar uma consulta.
-- [ ] Deve validar se o horário está dentro do expediente do médico e se não há conflito com outras consultas.
+- [x] Permite agendar uma consulta.
+- [x] Deve validar se o horário está dentro do expediente do médico e se não há conflito com outras consultas.
 
 ### Rota de Listagem de Consultas por Médico
 
