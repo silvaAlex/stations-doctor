@@ -5,8 +5,8 @@
 Trata-se de uma aplicação que permite o agendamento de Consultas Médicas
 
 ![author](https://img.shields.io/badge/autor-Alex%20Junior-brightgreen)
-![languages](https://img.shields.io/github/languages/count/silvaAlex/stefanini)
-![last-commit](https://img.shields.io/github/last-commit/silvaAlex/stefanini)
+![languages](https://img.shields.io/github/languages/count/silvaAlex/stations-doctor)
+![last-commit](https://img.shields.io/github/last-commit/silvaAlex/stations-doctor)
 
 ## Detalhes do Desafio
 
@@ -19,8 +19,8 @@ Trata-se de uma aplicação que permite o agendamento de Consultas Médicas
 
 ### Rota de Listagem de Médicos Disponíveis
 
-- [ ] Deve exibir os médicos disponíveis para consulta.
-- [ ] Pode incluir informações como nome, CRM (Cadastro de Registro Médico) e especialidade.
+- [x] Deve exibir os médicos disponíveis para consulta.
+- [x] Pode incluir informações como nome, CRM (Cadastro de Registro Médico) e especialidade.
  
 ### Rota de Cadastro de Consulta
 
