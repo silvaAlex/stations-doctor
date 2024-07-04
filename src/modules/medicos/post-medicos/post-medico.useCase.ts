@@ -1,5 +1,5 @@
 import { MedicoRepository } from "../../../infra/repository/medicos/medico.repository";
-import { MedicoDTO } from "../DTOs/Medico";
+import { MedicoDTO } from "../../../DTOs/Medico";
 
 export class PostMedicoUseCase {
     constructor() { }

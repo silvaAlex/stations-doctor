@@ -1,6 +1,6 @@
 import { Request, Response} from 'express'
 import { PostMedicoUseCase } from './post-medico.useCase';
-import { MedicoDTO } from '../DTOs/Medico';
+import { MedicoDTO } from '../../../DTOs/Medico';
 
 export class PostMedicoConntroller {
     constructor(){}

@@ -12,8 +12,10 @@ CREATE TABLE "Paciente" (
 -- CreateTable
 CREATE TABLE "Medico" (
     "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "username" TEXT NOT NULL,
     "crm" TEXT NOT NULL,
+    "especialidade" TEXT NOT NULL,
 
     CONSTRAINT "Medico_pkey" PRIMARY KEY ("id")
 );
@@ -21,6 +23,7 @@ CREATE TABLE "Medico" (
 -- CreateTable
 CREATE TABLE "Consulta" (
     "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "appointmentDateTime" TIMESTAMP(3) NOT NULL,
     "medicoId" TEXT NOT NULL,
     "pacienteId" TEXT NOT NULL,
