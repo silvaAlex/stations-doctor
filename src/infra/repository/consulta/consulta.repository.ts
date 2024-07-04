@@ -19,16 +19,58 @@ export class ConsultaRepository {
         })
     }
 
-    async getConsultaPorMedicoId(id: string) {
+    async getConsultaPorMedicoId(medicoId: string) {
         const consultas = await prismaClient.consulta.findMany({
             where: {
-                medicoId: id,
+                medicoId
             },
             select: {
                 appointmentDateTime: true,
                 medico: {
                     select: {
                         expediente: true
+                    }
+                }
+            }  
+        })
+
+        return consultas;
+    }
+
+    async getConsultaPorMedico(crm: string) {
+        const consultas = await prismaClient.consulta.findMany({
+            where: {
+                medico: {
+                    crm
+                }
+            },
+            select: {
+                appointmentDateTime: true,
+                paciente: {
+                    select: {
+                        username: true,
+                        birthDay: true
+                    }
+                }
+            }  
+        })
+
+        return consultas;
+    }
+
+    async getConsultaPorPaciente(cpf: string) {
+        const consultas = await prismaClient.consulta.findMany({
+            where: {
+                paciente: {
+                    cpf
+                }
+            },
+            select: {
+                appointmentDateTime: true,
+                medico: {
+                    select: {
+                        username: true,
+                        especialidade: true
                     }
                 }
             }  
