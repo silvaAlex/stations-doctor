@@ -1,11 +1,11 @@
-import { MedicoRepository } from "../../../infra/repository/medicos/medico.repository";
+import { MedicoRepository } from '../../../infra/repository/medicos/medico.repository'
 
 export class GetAllMedicosUseCase {
-    constructor() { }
+  constructor() {}
 
-    async execute(date: Date) {
-        const medicoRepository = new MedicoRepository();
-       const medicos = await medicoRepository.getAllDisponiveis(date);
-        return medicos;
-    }
+  async execute(date: Date) {
+    const medicoRepository = new MedicoRepository()
+    const medicos = await medicoRepository.getAllDisponiveis(date)
+    return medicos
+  }
 }

@@ -1,12 +1,11 @@
-import { ConsultaRepository } from "../../../infra/repository/consulta/consulta.repository";
-
+import { ConsultaRepository } from '../../../infra/repository/consulta/consulta.repository'
 
 export class GetConsultasPorMedicoUseCase {
-    constructor() { }
+  constructor() {}
 
-    async execute(cpf: string) {
-        const consultaRepository = new ConsultaRepository()
-        const consultas = await consultaRepository.getConsultaPorPaciente(cpf);
-        return consultas;
-    }
+  async execute(cpf: string) {
+    const consultaRepository = new ConsultaRepository()
+    const consultas = await consultaRepository.getConsultaPorPaciente(cpf)
+    return consultas
+  }
 }
