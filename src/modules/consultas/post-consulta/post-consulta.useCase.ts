@@ -1,8 +1,7 @@
-import { ConsultaDTO } from '../../../DTOs/Consuta'
+import { ConsultaDTO } from '../../../DTOs/Consulta'
 import {
   ConsultaRepository,
-  IConsulta,
-} from '../../../infra/repository/consulta/consulta.repository'
+} from '../../../infra/repository/consulta/Consulta.Repository'
 import { PacienteRepository } from '../../../infra/repository/paciente/paciente.repository'
 
 export class PostConsultaUseCase {
@@ -14,7 +13,7 @@ export class PostConsultaUseCase {
     const pacienteRepository = new PacienteRepository()
 
     const isWithinWorkingHours =
-      await this.getDataConsultasPorMedico(consultaDTO)
+      await this.checkWithinWorkingHours(consultaDTO)
 
     if (!isWithinWorkingHours) {
       throw new Error(
@@ -25,10 +24,10 @@ export class PostConsultaUseCase {
     const paciente = await pacienteRepository.register(consultaDTO.paciente)
 
     if (paciente !== undefined) {
-      const consulta: IConsulta = {
+      const consulta: ConsultaDTO = {
         medicoId: consultaDTO.medicoId,
         dataAgendamento: consultaDTO.dataAgendamento,
-        pacienteId: paciente.id,
+        paciente: paciente,
       }
 
       const isAgendanmentoConflitante =
@@ -44,30 +43,40 @@ export class PostConsultaUseCase {
     }
   }
 
-  private async getDataConsultasPorMedico(consultaDTO: ConsultaDTO) {
-    const consultasPorMedico = this.consultaRepository.getConsultaPorMedicoId(
-      consultaDTO.medicoId,
-    )
+  private async checkWithinWorkingHours(consultaDTO: ConsultaDTO) {
+    const getMedico = await this.getDataConsultasPorMedico(consultaDTO.medicoId);
 
-    const results = (await consultasPorMedico).map(
-      (consultaMedico: { medico: { expediente: string } }) => {
-        const expediente = JSON.parse(consultaMedico.medico.expediente)
-        const startTime = new Date(
-          `${consultaDTO.dataAgendamento}T${expediente.start}`,
-        )
-        const endTime = new Date(
-          `${consultaDTO.dataAgendamento}T${expediente.end}`,
-        )
+    const results = getMedico.map((consulta) => {
+      if (consulta) {
+        const expediente = JSON.parse(consulta.medico.expediente)
+        const startTime = this.convertToUTCDate(consultaDTO.dataAgendamento, expediente.start)
+        const endTime = this.convertToUTCDate(consultaDTO.dataAgendamento, expediente.endTime)
 
         return { startTime, endTime }
-      },
-    )
+      }
+      return {}
+    })
 
     return results.some(({ startTime, endTime }) => {
-      return (
-        consultaDTO.dataAgendamento >= startTime &&
-        consultaDTO.dataAgendamento <= endTime
-      )
+
+      if (startTime === undefined || endTime === undefined)
+        return false;
+      consultaDTO.dataAgendamento >= startTime && consultaDTO.dataAgendamento <= endTime
     })
+  }
+
+  private async getDataConsultasPorMedico(medicoId: string) {
+    const consultasPorMedico = this.consultaRepository
+      .getConsultaPorMedicoId(medicoId,)
+
+    return consultasPorMedico;
+  }
+
+  private convertToUTCDate(dataAgendamento: Date, time: string) {
+    const [hours, minutes] = time.split(':').map(Number);
+
+    const date = new Date(dataAgendamento);
+    date.setUTCHours(hours, minutes, 0, 0)
+    return date;
   }
 }

@@ -77,7 +77,7 @@ export class ConsultaRepository implements IConsultaRepository {
     return consultas
   }
 
-  async getConsulta(consultaData: IConsulta): Promise<IConsulta | null> {
+  async getConsulta(consultaData: ConsultaDTO): Promise<IConsulta | null> {
     const consulta = await prismaClient.consulta.findFirst({
       where: {
         medicoId: consultaData.medicoId,
@@ -87,3 +87,5 @@ export class ConsultaRepository implements IConsultaRepository {
     return consulta;
   }
 }
+export { IConsulta };
+

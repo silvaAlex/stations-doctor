@@ -6,5 +6,5 @@ export interface IConsultaRepository {
     getConsultaPorMedicoId(medicoId: string) : Promise<IConsultaPorMedicoId[]>
     getConsultaPorMedicoCRM(crm: string) : Promise<IConsultaPorMedicoCRM[]>
     getConsultaPorPaciente(cpf: string) : Promise<IConsultaPorPaciente[]>
-    getConsulta(consultaData: IConsulta): Promise<IConsulta | null>
+    getConsulta(consultaData: ConsultaDTO): Promise<IConsulta | null>
 }

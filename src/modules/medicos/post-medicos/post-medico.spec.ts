@@ -1,6 +1,6 @@
 import { MedicoDTO } from "../../../DTOs/Medico";
-import { IMedicoRepository } from "../../../infra/repository/medicos/imedico.repository";
-import { MedicoRepositoryInMemory } from '../../../infra/repository/medicos/medico-inMemory.repository';
+import { IMedicoRepository } from "../../../infra/repository/medicos/IMedico.Repository";
+import { MedicoRepositoryInMemory } from '../../../infra/repository/medicos/Medico-InMemory.Repository';
 import { PostMedicoUseCase } from './post-medico.useCase';
 
 describe('POST medicos', () => {

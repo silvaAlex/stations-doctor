@@ -1,4 +1,4 @@
-import { MedicoRepository } from "../../../infra/repository/medicos/medico.repository";
+import { MedicoRepository } from "../../../infra/repository/medicos/Medico.Repository";
 import { PostMedicoUseCase } from './post-medico.useCase';
 import { PostMedicoConntroller } from './post-medico.controller'
 

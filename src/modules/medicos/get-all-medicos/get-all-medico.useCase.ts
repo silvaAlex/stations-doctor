@@ -1,4 +1,4 @@
-import { IMedicoRepository } from '../../../infra/repository/medicos/imedico.repository'
+import { IMedicoRepository } from '../../../infra/repository/medicos/IMedico.Repository'
 
 export class GetAllMedicosUseCase {
   constructor(private medicoRepository: IMedicoRepository) {}

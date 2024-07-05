@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { PostConsultaUseCase } from './post-consulta.useCase'
-import { ConsultaDTO } from '../../../DTOs/Consuta'
+import { ConsultaDTO } from '../../../DTOs/Consulta'
 
 export class PostConsultaConntroller {
   constructor() {}

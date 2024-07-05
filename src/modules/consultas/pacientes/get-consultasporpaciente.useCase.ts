@@ -1,4 +1,4 @@
-import { ConsultaRepository } from '../../../infra/repository/consulta/consulta.repository'
+import { ConsultaRepository } from '../../../infra/repository/consulta/Consulta.Repository'
 
 export class GetConsultasPorMedicoUseCase {
   constructor() {}
