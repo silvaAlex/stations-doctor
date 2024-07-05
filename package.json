@@ -38,6 +38,8 @@
   },
   "dependencies": {
     "@prisma/client": "^5.16.1",
-    "express": "^4.19.2"
+    "date-holidays": "^3.23.12",
+    "express": "^4.19.2",
+    "package.json": "^2.0.1"
   }
 }
