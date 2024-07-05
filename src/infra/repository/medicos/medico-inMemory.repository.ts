@@ -1,5 +1,5 @@
 import { MedicoDTO } from '../../../DTOs/Medico';
-import { IMedicoRepository } from './imedico.repository'
+import { IMedicoRepository } from './IMedico.Repository'
 import { v4 as uuid } from "uuid";
 
 export class MedicoRepositoryInMemory implements IMedicoRepository {

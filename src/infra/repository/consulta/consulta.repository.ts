@@ -1,23 +1,23 @@
 import { prismaClient } from '../../../../prisma/prismaClient'
+import { ConsultaDTO } from '../../../DTOs/Consulta';
+import { IConsulta, IConsultaPorMedicoCRM, IConsultaPorMedicoId, IConsultaPorPaciente } from './Consulta';
+import { IConsultaRepository } from './IConsulta.Repository';
 
-export interface IConsulta {
-  medicoId: string
-  dataAgendamento: Date
-  pacienteId: string
-}
-
-export class ConsultaRepository {
-  async register(consulta: IConsulta) {
-    return await prismaClient.consulta.create({
-      data: {
-        dataAgendamento: consulta.dataAgendamento,
-        medicoId: consulta.medicoId,
-        pacienteId: consulta.pacienteId,
-      },
-    })
+export class ConsultaRepository implements IConsultaRepository {
+  async register(consultaData: ConsultaDTO): Promise<IConsulta | null> {
+    if (consultaData.paciente.id) {
+      return await prismaClient.consulta.create({
+        data: {
+          dataAgendamento: consultaData.dataAgendamento,
+          medicoId: consultaData.medicoId,
+          pacienteId: consultaData.paciente.id,
+        },
+      })
+    }
+    return null
   }
 
-  async getConsultaPorMedicoId(medicoId: string) {
+  async getConsultaPorMedicoId(medicoId: string): Promise<IConsultaPorMedicoId[]> {
     const consultas = await prismaClient.consulta.findMany({
       where: {
         medicoId,
@@ -31,11 +31,11 @@ export class ConsultaRepository {
         },
       },
     })
-
+  
     return consultas
   }
 
-  async getConsultaPorMedico(crm: string) {
+  async getConsultaPorMedicoCRM(crm: string): Promise<IConsultaPorMedicoCRM[]> {
     const consultas = await prismaClient.consulta.findMany({
       where: {
         medico: {
@@ -52,11 +52,11 @@ export class ConsultaRepository {
         },
       },
     })
-
+  
     return consultas
   }
 
-  async getConsultaPorPaciente(cpf: string) {
+  async getConsultaPorPaciente(cpf: string): Promise<IConsultaPorPaciente[]> {
     const consultas = await prismaClient.consulta.findMany({
       where: {
         paciente: {
@@ -73,16 +73,17 @@ export class ConsultaRepository {
         },
       },
     })
-
+  
     return consultas
   }
 
-  async getConsulta(consulta: IConsulta) {
-    return await prismaClient.consulta.findFirst({
+  async getConsulta(consultaData: IConsulta): Promise<IConsulta | null> {
+    const consulta = await prismaClient.consulta.findFirst({
       where: {
-        medicoId: consulta.medicoId,
-        dataAgendamento: consulta.dataAgendamento,
+        medicoId: consultaData.medicoId,
+        dataAgendamento: consultaData.dataAgendamento,
       },
     })
+    return consulta;
   }
 }

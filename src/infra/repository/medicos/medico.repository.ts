@@ -1,5 +1,5 @@
 import { prismaClient } from '../../../../prisma/prismaClient'
-import { IMedicoRepository } from './imedico.repository'
+import { IMedicoRepository } from './IMedico.Repository'
 import { MedicoDTO } from '../../../DTOs/Medico'
 
 export class MedicoRepository implements IMedicoRepository {
