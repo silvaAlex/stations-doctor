@@ -1,31 +1,21 @@
 import { prismaClient } from '../../../../prisma/prismaClient'
+import { IMedicoRepository } from './imedico.repository'
+import { MedicoDTO } from '../../../DTOs/Medico'
 
-interface IExpediente {
-  diasSemana: string
-  horarioAntedimento: {
-    start: string
-    end: string
-  }
-}
-
-export interface IMedico {
-  nomeMedico: string
-  crm: string
-  especialidade: string
-  expediente: IExpediente
-}
-
-export class MedicoRepository {
-  async register(medico: IMedico) {
+export class MedicoRepository implements IMedicoRepository {
+  async register(medico: MedicoDTO): Promise<MedicoDTO | null> {
     const medicoExist = await this.getMedico(medico.crm)
 
-    if (medicoExist) return
+    if (medicoExist)
+      return medicoExist
 
-    if (medico.nomeMedico === null || medico.nomeMedico === undefined) return
+    if (medico.nomeMedico === null || medico.nomeMedico === undefined)
+      return null
 
-    if (medico.crm === null || medico.crm === undefined) return
+    if (medico.crm === null || medico.crm === undefined)
+      return null
 
-    return await prismaClient.medico.create({
+    const medicoCreated = await prismaClient.medico.create({
       data: {
         nomeMedico: medico.nomeMedico,
         crm: medico.crm,
@@ -33,22 +23,45 @@ export class MedicoRepository {
         expediente: JSON.stringify(medico.expediente),
       },
     })
+
+    const medicoDTO: MedicoDTO = {
+      id: medicoCreated.id,
+      nomeMedico: medicoCreated.nomeMedico,
+      crm: medicoCreated.crm,
+      especialidade: medicoCreated.especialidade,
+      expediente: JSON.parse(medicoCreated.expediente)
+    }
+
+    return medicoDTO;
   }
 
-  async getMedico(crm: string) {
+  async getMedico(crm: string): Promise<MedicoDTO | null> {
     try {
       const medico = await prismaClient.medico.findFirst({
         where: {
           crm,
         },
-      })
-      return medico
+      });
+      if (medico) {
+        const medicoDTO: MedicoDTO = {
+          id: medico.id,
+          nomeMedico: medico?.nomeMedico,
+          crm: medico?.crm,
+          expediente: JSON.parse(medico?.expediente),
+          especialidade: medico.especialidade
+        }
+        return medicoDTO;
+      }
+      return null;
     } catch (error) {
       return null
     }
   }
 
-  async getAll() {
+  async getAll(): Promise<MedicoDTO[]> {
+
+    const medicosDisponiveis: MedicoDTO[] = []
+
     const medicos = await prismaClient.medico.findMany({
       select: {
         id: true,
@@ -60,11 +73,22 @@ export class MedicoRepository {
       },
     })
 
-    return medicos
+    medicos.map((medico) => {
+      medicosDisponiveis.push({
+        nomeMedico: medico.nomeMedico,
+        crm: medico.crm,
+        especialidade: medico.especialidade,
+        expediente: JSON.parse(medico.expediente)
+      })
+
+      return medicosDisponiveis;
+    })
+
+    return medicosDisponiveis
   }
 
-  async getAllDisponiveis(date: Date) {
-    let medicosDisponiveis = []
+  async getAllDisponiveis(date: Date): Promise<MedicoDTO[]> {
+    const medicosDisponiveis: MedicoDTO[] = []
     const _medicos = await this.getAll()
 
     const diasSemana = [
@@ -77,10 +101,9 @@ export class MedicoRepository {
       'Sábado',
     ]
 
-    medicosDisponiveis = _medicos.map((medico) => {
+    _medicos.map((medico) => {
       if (medico.expediente) {
-        const expediente: IExpediente = JSON.parse(medico.expediente)
-
+        const expediente = medico.expediente
         if (expediente.diasSemana.includes(diasSemana[date.getDay()])) {
           const startTime = new Date(
             `${date}T${expediente.horarioAntedimento.start}`,

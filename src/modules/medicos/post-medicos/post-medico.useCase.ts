@@ -1,16 +1,16 @@
-import { MedicoRepository } from '../../../infra/repository/medicos/medico.repository'
 import { MedicoDTO } from '../../../DTOs/Medico'
+import { IMedicoRepository } from '../../../infra/repository/medicos/imedico.repository'
 
 export class PostMedicoUseCase {
-  constructor() {}
+  constructor(private medicoRepository: IMedicoRepository) {}
 
   async execute(medicoDTO: MedicoDTO) {
-    const medicoRepository = new MedicoRepository()
+    const medico = await this.medicoRepository.getMedico(medicoDTO.crm)
 
-    const medico = await medicoRepository.getMedico(medicoDTO.crm)
-
-    if (!medico) {
-      return await medicoRepository.register(medicoDTO)
+    if(medico){
+      throw new Error("Medico já existe!");
     }
+
+    return await this.medicoRepository.register(medicoDTO);
   }
 }

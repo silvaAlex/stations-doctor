@@ -3,14 +3,12 @@ import { PostMedicoUseCase } from './post-medico.useCase'
 import { MedicoDTO } from '../../../DTOs/Medico'
 
 export class PostMedicoConntroller {
-  constructor() {}
+  constructor(private useCase: PostMedicoUseCase) {}
 
   async handler(request: Request<MedicoDTO>, response: Response) {
-    const useCase = new PostMedicoUseCase()
-
     try {
       const { params } = request
-      const result = await useCase.execute(params)
+      const result = await this.useCase.execute(params)
 
       if (!result)
         return response

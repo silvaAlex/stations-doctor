@@ -1,11 +1,9 @@
-import { MedicoRepository } from '../../../infra/repository/medicos/medico.repository'
+import { IMedicoRepository } from '../../../infra/repository/medicos/imedico.repository'
 
 export class GetAllMedicosUseCase {
-  constructor() {}
-
+  constructor(private medicoRepository: IMedicoRepository) {}
   async execute(date: Date) {
-    const medicoRepository = new MedicoRepository()
-    const medicos = await medicoRepository.getAllDisponiveis(date)
+    const medicos = await this.medicoRepository.getAllDisponiveis(date)
     return medicos
   }
 }
