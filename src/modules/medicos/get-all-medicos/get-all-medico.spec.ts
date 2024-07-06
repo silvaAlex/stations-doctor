@@ -1,15 +1,16 @@
 import { MedicoDTO } from "../../../DTOs/Medico";
 import { IMedicoRepository } from "../../../infra/repository/medicos/IMedico.Repository";
-import { MedicoRepositoryInMemory } from '../../../infra/repository/medicos/Medico-InMemory.Repository';
+import { MockMedicoRepository } from "../../../infra/repository/medicos/MockMedico.Repository";
 import { GetAllMedicosUseCase } from "./get-all-medico.useCase";
 
-describe('GET medicos', () => {
-    let medicosRepository: IMedicoRepository;
-    let getAllMedicosUseCase: GetAllMedicosUseCase;
 
-    beforeAll(() => {
-        medicosRepository = new MedicoRepositoryInMemory()
-        getAllMedicosUseCase = new GetAllMedicosUseCase(medicosRepository)
+describe('GET medicos', () => {
+    let getAllMedicosUseCase: GetAllMedicosUseCase;
+    let mockMedicosRepository: IMedicoRepository;
+
+    beforeAll(async () => {
+        mockMedicosRepository = new MockMedicoRepository()
+        getAllMedicosUseCase = new GetAllMedicosUseCase(mockMedicosRepository)
 
         const userData: MedicoDTO = {
             nomeMedico: 'Fernanda',
@@ -24,16 +25,20 @@ describe('GET medicos', () => {
             }   
         };
 
-        medicosRepository.register(userData);
+        await mockMedicosRepository.register(userData);
     })
 
     it('deve retornar uma lista de médicos disponíveis', async () => {
-        const date =  new Date('05/07/2024T18:15')
-        const medicos = await getAllMedicosUseCase.execute(date);
+        const date =  new Date('2024-07-05T19:15:00Z')
+
+        const medicos = await getAllMedicosUseCase.execute(date)
+
+        console.log(JSON.stringify(medicos))
+
         expect(Array.isArray(medicos)).toBeTruthy();
         if (medicos.length > 0) {
-            expect(medicos[0]).toHaveProperty('nome');
-            expect(medicos[0]).toHaveProperty('CRM');
+            expect(medicos[0]).toHaveProperty('nomeMedico');
+            expect(medicos[0]).toHaveProperty('crm');
             expect(medicos[0]).toHaveProperty('especialidade');
         }
     })

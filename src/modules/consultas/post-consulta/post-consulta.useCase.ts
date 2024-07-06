@@ -4,6 +4,8 @@ import {
 } from '../../../infra/repository/consulta/Consulta.Repository'
 import { PacienteRepository } from '../../../infra/repository/paciente/paciente.repository'
 
+import { convertToUTCDate } from '../../../utils/Utils'
+
 export class PostConsultaUseCase {
   private consultaRepository
   constructor() {
@@ -49,8 +51,8 @@ export class PostConsultaUseCase {
     const results = getMedico.map((consulta) => {
       if (consulta) {
         const expediente = JSON.parse(consulta.medico.expediente)
-        const startTime = this.convertToUTCDate(consultaDTO.dataAgendamento, expediente.start)
-        const endTime = this.convertToUTCDate(consultaDTO.dataAgendamento, expediente.endTime)
+        const startTime = convertToUTCDate(consultaDTO.dataAgendamento, expediente.start)
+        const endTime = convertToUTCDate(consultaDTO.dataAgendamento, expediente.endTime)
 
         return { startTime, endTime }
       }
@@ -71,12 +73,5 @@ export class PostConsultaUseCase {
 
     return consultasPorMedico;
   }
-
-  private convertToUTCDate(dataAgendamento: Date, time: string) {
-    const [hours, minutes] = time.split(':').map(Number);
-
-    const date = new Date(dataAgendamento);
-    date.setUTCHours(hours, minutes, 0, 0)
-    return date;
-  }
 }
+

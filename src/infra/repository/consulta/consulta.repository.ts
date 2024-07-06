@@ -6,13 +6,15 @@ import { IConsultaRepository } from './IConsulta.Repository';
 export class ConsultaRepository implements IConsultaRepository {
   async register(consultaData: ConsultaDTO): Promise<IConsulta | null> {
     if (consultaData.paciente.id) {
-      return await prismaClient.consulta.create({
+      const consulta =  await prismaClient.consulta.create({
         data: {
           dataAgendamento: consultaData.dataAgendamento,
           medicoId: consultaData.medicoId,
-          pacienteId: consultaData.paciente.id,
+          pacienteId: consultaData.paciente.id
         },
       })
+
+      return consulta;
     }
     return null
   }

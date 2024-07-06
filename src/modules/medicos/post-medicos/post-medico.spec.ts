@@ -1,17 +1,18 @@
 import { MedicoDTO } from "../../../DTOs/Medico";
 import { IMedicoRepository } from "../../../infra/repository/medicos/IMedico.Repository";
-import { MedicoRepositoryInMemory } from '../../../infra/repository/medicos/Medico-InMemory.Repository';
-import { PostMedicoUseCase } from './post-medico.useCase';
+import { MockMedicoRepository } from "../../../infra/repository/medicos/MockMedico.Repository";
+import { PostMedicoUseCase } from './post-medico.useCase'
 
-describe('POST medicos', () => {
-    let medicosRepository: IMedicoRepository;
-    let postMedicosUseCase: PostMedicoUseCase;
+describe('Medicos Repository', () => {
+    
+    let mockMedicosRepository: IMedicoRepository;
+    let useCase: PostMedicoUseCase
 
     beforeAll(() => {
-        medicosRepository = new MedicoRepositoryInMemory()
-        postMedicosUseCase = new PostMedicoUseCase(medicosRepository)
+        mockMedicosRepository = new MockMedicoRepository()
+        useCase = new PostMedicoUseCase(mockMedicosRepository)
     })
-
+    
     it('deve inserir um novo Medico', async () => {
         const userData: MedicoDTO = {
             nomeMedico: 'Fernanda',
@@ -25,12 +26,9 @@ describe('POST medicos', () => {
                 }
             }
         };
-
-        const medico = await postMedicosUseCase.execute(userData)
-
-        expect(medico).toHaveProperty("id");
-        expect(medico?.nomeMedico).toBe("Fernanda");
-        expect(medico?.crm).toBe('00001-MG')
+        const result = await useCase.execute(userData)
+        
+        expect(result).toEqual(userData);
     })
 
     it('não deve inserir um novo Medico com o mesmo CRM', async () => {
@@ -46,9 +44,10 @@ describe('POST medicos', () => {
                 }
             }
         };
-        
-        await expect(postMedicosUseCase.execute(userData))
+
+        await expect(useCase.execute(userData))
             .rejects
             .toThrow('Medico já existe!');
     })
+    
 })

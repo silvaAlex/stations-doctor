@@ -1,6 +1,7 @@
 import { prismaClient } from '../../../../prisma/prismaClient'
 import { IMedicoRepository } from './IMedico.Repository'
 import { MedicoDTO } from '../../../DTOs/Medico'
+import { convertToUTCDate } from '../../../utils/Utils'
 
 export class MedicoRepository implements IMedicoRepository {
   async register(medico: MedicoDTO): Promise<MedicoDTO | null> {
@@ -88,9 +89,9 @@ export class MedicoRepository implements IMedicoRepository {
   }
 
   async getAllDisponiveis(date: Date): Promise<MedicoDTO[]> {
-    const medicosDisponiveis: MedicoDTO[] = []
-    const _medicos = await this.getAll()
-
+    const medicos = await this.getAll()
+    const currentDate = new Date()
+    
     const diasSemana = [
       'Domingo',
       'Segunda',
@@ -101,23 +102,28 @@ export class MedicoRepository implements IMedicoRepository {
       'Sábado',
     ]
 
-    _medicos.map((medico) => {
-      if (medico.expediente) {
-        const expediente = medico.expediente
-        if (expediente.diasSemana.includes(diasSemana[date.getDay()])) {
-          const startTime = new Date(
-            `${date}T${expediente.horarioAntedimento.start}`,
-          )
-          const endTime = new Date(
-            `${date}T${expediente.horarioAntedimento.end}`,
-          )
+    const diaDaSemana = diasSemana[date.getDay()];
+
+    const medicosDisponiveis = medicos.map(medico => {
+      const expediente = medico.expediente;
+
+      const trabalhaNesseDia = expediente.diasSemana.includes(diaDaSemana);
+
+      if (trabalhaNesseDia) {
+          const startTime = convertToUTCDate(date, expediente.horarioAntedimento.start)
+          const endTime = convertToUTCDate(date, expediente.horarioAntedimento.end)
+
+          if(date < currentDate)
+            return null
           if (date >= startTime && date <= endTime) {
-            medicosDisponiveis.push(medico)
+              return medico
           }
-        }
       }
+      return null;
     })
 
-    return medicosDisponiveis
+    return medicosDisponiveis.filter(m => m !== null).map(medico => {
+      return medico
+    });
   }
 }
