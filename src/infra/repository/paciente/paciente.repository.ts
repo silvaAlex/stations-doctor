@@ -1,20 +1,19 @@
 import { prismaClient } from '../../../../prisma/prismaClient'
+import { PacienteDTO } from '../../../DTOs/Paciente'
+import { IPacienteRepository } from './IPaciente.Repository'
 
-interface IPaciente {
-  dataNascimento: Date
-  nomePaciente: string
-  cpf: string
-}
+export class PacienteRepository implements IPacienteRepository {
 
-export class PacienteRepository {
-  async register(paciente: IPaciente) {
+  async register(paciente:PacienteDTO) : Promise<PacienteDTO | null> {
     const pacienteExist = await this.getPaciente(paciente.cpf)
 
     if (pacienteExist) return pacienteExist
     else {
-      if (paciente.nomePaciente === null || paciente.nomePaciente === undefined) return
+      if (paciente.nomePaciente === null || paciente.nomePaciente === undefined) 
+        return null
 
-      if (paciente.cpf === null || paciente.cpf === undefined) return
+      if (paciente.cpf === null || paciente.cpf === undefined) 
+        return null
 
       return await prismaClient.paciente.create({
         data: {

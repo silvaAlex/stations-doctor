@@ -1,4 +1,4 @@
-interface IExpediente {
+export interface IExpediente {
   diasSemana: string
   horarioAntedimento: {
     start: string

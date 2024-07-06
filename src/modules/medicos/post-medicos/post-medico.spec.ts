@@ -3,14 +3,14 @@ import { IMedicoRepository } from "../../../infra/repository/medicos/IMedico.Rep
 import { MockMedicoRepository } from "../../../infra/repository/medicos/MockMedico.Repository";
 import { PostMedicoUseCase } from './post-medico.useCase'
 
-describe('Medicos Repository', () => {
+describe('POST Medico UseCase', () => {
     
-    let mockMedicosRepository: IMedicoRepository;
+    let mockMedicoRepository: IMedicoRepository;
     let useCase: PostMedicoUseCase
 
     beforeAll(() => {
-        mockMedicosRepository = new MockMedicoRepository()
-        useCase = new PostMedicoUseCase(mockMedicosRepository)
+        mockMedicoRepository = new MockMedicoRepository()
+        useCase = new PostMedicoUseCase(mockMedicoRepository)
     })
     
     it('deve inserir um novo Medico', async () => {
@@ -48,6 +48,5 @@ describe('Medicos Repository', () => {
         await expect(useCase.execute(userData))
             .rejects
             .toThrow('Medico já existe!');
-    })
-    
+    })  
 })

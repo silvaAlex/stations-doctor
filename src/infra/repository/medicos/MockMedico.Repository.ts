@@ -3,6 +3,7 @@ import { IMedicoRepository } from "./IMedico.Repository";
 import { convertToUTCDate } from '../../../utils/Utils'
 
 export class MockMedicoRepository implements IMedicoRepository {
+   
     private medicos: MedicoDTO[] = []
 
     async register(medico: MedicoDTO): Promise<MedicoDTO | null> {

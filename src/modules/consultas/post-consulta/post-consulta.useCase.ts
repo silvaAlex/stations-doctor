@@ -1,31 +1,25 @@
 import { ConsultaDTO } from '../../../DTOs/Consulta'
-import {
-  ConsultaRepository,
-} from '../../../infra/repository/consulta/Consulta.Repository'
-import { PacienteRepository } from '../../../infra/repository/paciente/paciente.repository'
+import { IExpediente } from '../../../DTOs/Medico'
+import { IConsultaRepository } from '../../../infra/repository/consulta/IConsulta.Repository'
+import { IPacienteRepository } from '../../../infra/repository/paciente/IPaciente.Repository'
 
 import { convertToUTCDate } from '../../../utils/Utils'
 
 export class PostConsultaUseCase {
-  private consultaRepository
-  constructor() {
-    this.consultaRepository = new ConsultaRepository()
-  }
+  constructor(private consultaRepository: IConsultaRepository, private pacienteRepository: IPacienteRepository) { }
+
   async execute(consultaDTO: ConsultaDTO) {
-    const pacienteRepository = new PacienteRepository()
+    const trabalhaNesseHorario = await this.getAllConsultas(consultaDTO)
 
-    const isWithinWorkingHours =
-      await this.checkWithinWorkingHours(consultaDTO)
-
-    if (!isWithinWorkingHours) {
+    if (!trabalhaNesseHorario) {
       throw new Error(
         'O horário da consulta está fora do horário de trabalho do médico',
       )
     }
 
-    const paciente = await pacienteRepository.register(consultaDTO.paciente)
+    const paciente = await this.pacienteRepository.register(consultaDTO.paciente)
 
-    if (paciente !== undefined) {
+    if (paciente) {
       const consulta: ConsultaDTO = {
         medicoId: consultaDTO.medicoId,
         dataAgendamento: consultaDTO.dataAgendamento,
@@ -45,33 +39,42 @@ export class PostConsultaUseCase {
     }
   }
 
-  private async checkWithinWorkingHours(consultaDTO: ConsultaDTO) {
-    const getMedico = await this.getDataConsultasPorMedico(consultaDTO.medicoId);
+  private async getAllConsultas(consultaDTO: ConsultaDTO) {
+    const consultas = await this.consultaRepository.getConsultaPorMedicoId(consultaDTO.medicoId)
 
-    const results = getMedico.map((consulta) => {
+    const diasSemana = [
+      'Domingo',
+      'Segunda',
+      'Terça',
+      'Quarta',
+      'Quinta',
+      'Sexta',
+      'Sábado',
+    ]
+
+    const currentDate = new Date()
+    const diaDaSemana = diasSemana[consultaDTO.dataAgendamento.getDay()];
+    const consultasDisponiveis = consultas.map(consulta => {
       if (consulta) {
-        const expediente = JSON.parse(consulta.medico.expediente)
-        const startTime = convertToUTCDate(consultaDTO.dataAgendamento, expediente.start)
-        const endTime = convertToUTCDate(consultaDTO.dataAgendamento, expediente.endTime)
+        const expediente: IExpediente = JSON.parse(consulta.medico.expediente);
 
-        return { startTime, endTime }
+        const trabalhaNesseDia = expediente.diasSemana.includes(diaDaSemana);
+        if (trabalhaNesseDia) {
+          const startTime = convertToUTCDate(consulta.dataAgendamento, expediente.horarioAntedimento.start)
+          const endTime = convertToUTCDate(consulta.dataAgendamento, expediente.horarioAntedimento.end)
+          return { startTime, endTime }
+        }
       }
       return {}
     })
 
-    return results.some(({ startTime, endTime }) => {
-
+    return consultasDisponiveis.some(({ startTime, endTime }) => {
       if (startTime === undefined || endTime === undefined)
         return false;
+      if (consultaDTO.dataAgendamento < currentDate)
+        return false
       consultaDTO.dataAgendamento >= startTime && consultaDTO.dataAgendamento <= endTime
     })
-  }
-
-  private async getDataConsultasPorMedico(medicoId: string) {
-    const consultasPorMedico = this.consultaRepository
-      .getConsultaPorMedicoId(medicoId,)
-
-    return consultasPorMedico;
   }
 }
 

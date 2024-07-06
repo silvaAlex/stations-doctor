@@ -4,7 +4,7 @@ import { MockMedicoRepository } from "../../../infra/repository/medicos/MockMedi
 import { GetAllMedicosUseCase } from "./get-all-medico.useCase";
 
 
-describe('GET medicos', () => {
+describe('GET Medico UseCase', () => {
     let getAllMedicosUseCase: GetAllMedicosUseCase;
     let mockMedicosRepository: IMedicoRepository;
 
@@ -29,11 +29,9 @@ describe('GET medicos', () => {
     })
 
     it('deve retornar uma lista de médicos disponíveis', async () => {
-        const date =  new Date('2024-07-05T19:15:00Z')
+        const date =  new Date('2024-07-08T10:15:00Z')
 
         const medicos = await getAllMedicosUseCase.execute(date)
-
-        console.log(JSON.stringify(medicos))
 
         expect(Array.isArray(medicos)).toBeTruthy();
         if (medicos.length > 0) {

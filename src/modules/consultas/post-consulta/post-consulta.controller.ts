@@ -3,13 +3,12 @@ import { PostConsultaUseCase } from './post-consulta.useCase'
 import { ConsultaDTO } from '../../../DTOs/Consulta'
 
 export class PostConsultaConntroller {
-  constructor() {}
+  constructor(private useCase: PostConsultaUseCase) {}
 
   async handler(request: Request<ConsultaDTO>, response: Response) {
-    const useCase = new PostConsultaUseCase()
     try {
       const { params } = request
-      const result = await useCase.execute(params)
+      const result = await this.useCase.execute(params)
 
       if (!result) return response.status(201).json(result)
     } catch (err) {

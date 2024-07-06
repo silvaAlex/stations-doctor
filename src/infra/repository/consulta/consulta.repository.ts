@@ -1,10 +1,9 @@
 import { prismaClient } from '../../../../prisma/prismaClient'
-import { ConsultaDTO } from '../../../DTOs/Consulta';
-import { IConsulta, IConsultaPorMedicoCRM, IConsultaPorMedicoId, IConsultaPorPaciente } from './Consulta';
+import { ConsultaDTO, IConsultaPorMedicoCRM, IConsultaPorMedicoId, IConsultaPorPaciente } from '../../../DTOs/Consulta';
 import { IConsultaRepository } from './IConsulta.Repository';
 
 export class ConsultaRepository implements IConsultaRepository {
-  async register(consultaData: ConsultaDTO): Promise<IConsulta | null> {
+  async register(consultaData: ConsultaDTO): Promise<ConsultaDTO | null> {
     if (consultaData.paciente.id) {
       const consulta =  await prismaClient.consulta.create({
         data: {
@@ -12,6 +11,9 @@ export class ConsultaRepository implements IConsultaRepository {
           medicoId: consultaData.medicoId,
           pacienteId: consultaData.paciente.id
         },
+        include: {
+          paciente: true
+        }
       })
 
       return consulta;
@@ -79,15 +81,17 @@ export class ConsultaRepository implements IConsultaRepository {
     return consultas
   }
 
-  async getConsulta(consultaData: ConsultaDTO): Promise<IConsulta | null> {
+  async getConsulta(consultaData: ConsultaDTO): Promise<ConsultaDTO | null> {
     const consulta = await prismaClient.consulta.findFirst({
       where: {
         medicoId: consultaData.medicoId,
         dataAgendamento: consultaData.dataAgendamento,
       },
+      include: {
+        paciente: true
+      }
     })
     return consulta;
   }
 }
-export { IConsulta };
 

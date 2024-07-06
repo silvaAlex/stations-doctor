@@ -4,6 +4,7 @@ import { MedicoDTO } from '../../../DTOs/Medico'
 import { convertToUTCDate } from '../../../utils/Utils'
 
 export class MedicoRepository implements IMedicoRepository {
+ 
   async register(medico: MedicoDTO): Promise<MedicoDTO | null> {
     const medicoExist = await this.getMedico(medico.crm)
 
@@ -58,7 +59,7 @@ export class MedicoRepository implements IMedicoRepository {
       return null
     }
   }
-
+  
   async getAll(): Promise<MedicoDTO[]> {
 
     const medicosDisponiveis: MedicoDTO[] = []
@@ -122,8 +123,6 @@ export class MedicoRepository implements IMedicoRepository {
       return null;
     })
 
-    return medicosDisponiveis.filter(m => m !== null).map(medico => {
-      return medico
-    });
+    return medicosDisponiveis.filter(m => m !== null).map(medico => medico);
   }
 }
