@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { GetConsultasPorMedicoUseCase as GetConsultasPorPacienteUseCase } from './get-consultasporpaciente.useCase'
 
 export class GetConsultasPorPacienteConntroller {
-  constructor() {}
+  constructor() { }
 
   async handler(request: Request, response: Response) {
     const useCase = new GetConsultasPorPacienteUseCase()

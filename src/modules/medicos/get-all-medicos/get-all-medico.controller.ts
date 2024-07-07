@@ -4,10 +4,14 @@ import { GetAllMedicosUseCase } from './get-all-medico.useCase'
 export class GetAllMedicosController {
   constructor(private useCase: GetAllMedicosUseCase) {}
 
-  async handler(request: Request<Date>, response: Response) {
+  async handler(request: Request, response: Response) {
     try {
-      const { params } = request
-      const result = await this.useCase.execute(params)
+      const { body } = request
+      console.log(body)
+
+      const date = new Date(body.date)
+
+      const result = await this.useCase.execute(date)
 
       return response.status(200).json(result)
     } catch (err) {
