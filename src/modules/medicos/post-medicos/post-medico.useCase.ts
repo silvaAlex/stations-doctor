@@ -1,5 +1,4 @@
 import { MedicoDTO } from '../../../DTOs/Medico'
-import { AppError } from '../../../errors/AppError'
 import { IMedicoRepository } from '../../../infra/repository/medicos/IMedico.Repository'
 
 export class PostMedicoUseCase {
