@@ -32,8 +32,7 @@ export class MockConsultaRepository implements IConsultaRepository {
           id: consulta.id,
           dataAgendamento: consulta.dataAgendamento,
           medico: {
-            expediente: JSON.stringify(medico?.expediente),
-            duracao: medico?.duracao
+            expediente: JSON.stringify(medico?.expediente)
           },
         })
       }
@@ -105,5 +104,9 @@ export class MockConsultaRepository implements IConsultaRepository {
   async getMedicoPorCRM(crm: string): Promise<MedicoDTO | null> {
     const medico = this.medicos.find((medico) => medico.crm === crm)
     return medico || null
+  }
+
+  async getAllMedicos(): Promise<MedicoDTO[]> {
+    return this.medicos
   }
 }

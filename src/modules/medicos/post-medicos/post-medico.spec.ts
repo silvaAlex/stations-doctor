@@ -44,6 +44,8 @@ describe('POST Medico UseCase', () => {
       },
     }
 
-    await expect(useCase.execute(userData)).rejects.toThrow('Medico já existe!')
+    await expect(useCase.execute(userData))
+      .rejects
+      .toThrow('Medico já existe!')
   })
 })

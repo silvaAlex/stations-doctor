@@ -84,12 +84,12 @@ describe('POST Consulta UseCase', () => {
       await useCase.execute(userData1)
 
       await expect(useCase.execute(userData2)).rejects.toThrow(
-        'O horário da consulta está em conflito com a agenda do médico',
+        'O horário da consulta está em conflito com a agenda do médico'
       )
     }
   })
 
-  it('não deve ser possivel fazer agendamentos conflitantes', async () => {
+  it('deve ser possivel fazer agendamentos com sucesso', async () => {
     const medico = await mockMedicoRepository.getMedico('00001-MG')
     const date = new Date('2024-07-08T10:30:00Z')
     if (medico?.id) {

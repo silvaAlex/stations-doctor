@@ -33,7 +33,7 @@ export class PostConsultaUseCase {
 
     if (!trabalhaNesseHorario) {
       throw new AppError(
-        'O horário da consulta está fora do horário de trabalho do médico',
+        'O horário da consulta está fora do horário de trabalho do médico'
       )
     }
 
@@ -50,7 +50,7 @@ export class PostConsultaUseCase {
 
       if (isAgendanmentoConflitante) {
         throw new AppError(
-          'O horário da consulta está em conflito com a agenda do médico',
+          'O horário da consulta está em conflito com a agenda do médico'
         )
       }
 
