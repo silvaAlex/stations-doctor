@@ -4,18 +4,15 @@ import { MedicoDTO } from '../../../DTOs/Medico'
 import { convertToUTCDate } from '../../../utils/Utils'
 
 export class MedicoRepository implements IMedicoRepository {
- 
   async register(medico: MedicoDTO): Promise<MedicoDTO | null> {
     const medicoExist = await this.getMedico(medico.crm)
 
-    if (medicoExist)
-      return medicoExist
+    if (medicoExist) return medicoExist
 
     if (medico.nomeMedico === null || medico.nomeMedico === undefined)
       return null
 
-    if (medico.crm === null || medico.crm === undefined)
-      return null
+    if (medico.crm === null || medico.crm === undefined) return null
 
     const medicoCreated = await prismaClient.medico.create({
       data: {
@@ -31,10 +28,10 @@ export class MedicoRepository implements IMedicoRepository {
       nomeMedico: medicoCreated.nomeMedico,
       crm: medicoCreated.crm,
       especialidade: medicoCreated.especialidade,
-      expediente: JSON.parse(medicoCreated.expediente)
+      expediente: JSON.parse(medicoCreated.expediente),
     }
 
-    return medicoDTO;
+    return medicoDTO
   }
 
   async getMedico(crm: string): Promise<MedicoDTO | null> {
@@ -43,25 +40,24 @@ export class MedicoRepository implements IMedicoRepository {
         where: {
           crm,
         },
-      });
+      })
       if (medico) {
         const medicoDTO: MedicoDTO = {
           id: medico.id,
           nomeMedico: medico?.nomeMedico,
           crm: medico?.crm,
           expediente: JSON.parse(medico?.expediente),
-          especialidade: medico.especialidade
+          especialidade: medico.especialidade,
         }
-        return medicoDTO;
+        return medicoDTO
       }
-      return null;
+      return null
     } catch (error) {
       return null
     }
   }
-  
-  async getAll(): Promise<MedicoDTO[]> {
 
+  async getAll(): Promise<MedicoDTO[]> {
     const medicosDisponiveis: MedicoDTO[] = []
 
     const medicos = await prismaClient.medico.findMany({
@@ -80,10 +76,10 @@ export class MedicoRepository implements IMedicoRepository {
         nomeMedico: medico.nomeMedico,
         crm: medico.crm,
         especialidade: medico.especialidade,
-        expediente: JSON.parse(medico.expediente)
+        expediente: JSON.parse(medico.expediente),
       })
 
-      return medicosDisponiveis;
+      return medicosDisponiveis
     })
 
     return medicosDisponiveis
@@ -92,7 +88,7 @@ export class MedicoRepository implements IMedicoRepository {
   async getAllDisponiveis(date: Date): Promise<MedicoDTO[]> {
     const medicos = await this.getAll()
     const currentDate = new Date()
-    
+
     const diasSemana = [
       'Domingo',
       'Segunda',
@@ -103,26 +99,31 @@ export class MedicoRepository implements IMedicoRepository {
       'Sábado',
     ]
 
-    const diaDaSemana = diasSemana[date.getDay()];
+    const diaDaSemana = diasSemana[date.getDay()]
 
-    const medicosDisponiveis = medicos.map(medico => {
-      const expediente = medico.expediente;
+    const medicosDisponiveis = medicos.map((medico) => {
+      const expediente = medico.expediente
 
-      const trabalhaNesseDia = expediente.diasSemana.includes(diaDaSemana);
+      const trabalhaNesseDia = expediente.diasSemana.includes(diaDaSemana)
 
       if (trabalhaNesseDia) {
-          const startTime = convertToUTCDate(date, expediente.horarioAntedimento.start)
-          const endTime = convertToUTCDate(date, expediente.horarioAntedimento.end)
+        const startTime = convertToUTCDate(
+          date,
+          expediente.horarioAntedimento.start,
+        )
+        const endTime = convertToUTCDate(
+          date,
+          expediente.horarioAntedimento.end,
+        )
 
-          if(date < currentDate)
-            return null
-          if (date >= startTime && date <= endTime) {
-              return medico
-          }
+        if (date < currentDate) return null
+        if (date >= startTime && date <= endTime) {
+          return medico
+        }
       }
-      return null;
+      return null
     })
 
-    return medicosDisponiveis.filter(m => m !== null).map(medico => medico);
+    return medicosDisponiveis.filter((m) => m !== null).map((medico) => medico)
   }
 }

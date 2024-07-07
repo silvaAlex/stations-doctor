@@ -1,4 +1,4 @@
-import { PacienteDTO } from "./Paciente"
+import { PacienteDTO } from './Paciente'
 
 export interface ConsultaDTO {
   id?: string
@@ -8,27 +8,27 @@ export interface ConsultaDTO {
 }
 
 export interface IConsultaPorMedicoId {
-  id?: string,
-  dataAgendamento: Date;
+  id?: string
+  dataAgendamento: Date
   medico: {
-    expediente: string;
-  };
+    expediente: string,
+  }
 }
 
 export interface IConsultaPorPaciente {
-  id?: string,
-  dataAgendamento: Date;
+  id?: string
+  dataAgendamento: Date
   medico: {
-    especialidade: string;
-    nomeMedico: string;
-  };
+    especialidade: string
+    nomeMedico: string
+  }
 }
 
 export interface IConsultaPorMedicoCRM {
-  id?: string,
-  dataAgendamento: Date;
+  id?: string
+  dataAgendamento: Date
   paciente: {
-    dataNascimento: Date;
-    nomePaciente: string;
-  };
+    dataNascimento: Date
+    nomePaciente: string
+  }
 }
