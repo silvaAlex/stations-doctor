@@ -24,6 +24,11 @@ export class MockMedicoRepository implements IMedicoRepository {
         return medico || null
     }
 
+    async getMedicoById(id: string): Promise<MedicoDTO | null> {
+        const medico = this.medicos.find((medico) => medico.id === id)
+        return medico || null
+    }
+
     async getAll(): Promise<MedicoDTO[]> {
         return this.medicos
     }

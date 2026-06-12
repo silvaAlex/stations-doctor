@@ -36,6 +36,7 @@ describe('POST Consulta UseCase', () => {
         useCase = new PostConsultaUseCase(
             mockConsultaRepository,
             mockPacienteRepository,
+            mockMedicoRepository,
         )
     })
 

@@ -39,6 +39,7 @@ export class ConsultaRepository implements IConsultaRepository {
         medico: {
           select: {
             expediente: true,
+            especialidade: true,
           },
         },
       },

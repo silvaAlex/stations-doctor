@@ -57,6 +57,29 @@ export class MedicoRepository implements IMedicoRepository {
         }
     }
 
+    async getMedicoById(id: string): Promise<MedicoDTO | null> {
+        try {
+            const medico = await prismaClient.medico.findUnique({
+                where: {
+                    id,
+                },
+            })
+            if (medico) {
+                const medicoDTO: MedicoDTO = {
+                    id: medico.id,
+                    nomeMedico: medico.nomeMedico,
+                    crm: medico.crm,
+                    expediente: JSON.parse(medico.expediente),
+                    especialidade: medico.especialidade,
+                }
+                return medicoDTO
+            }
+            return null
+        } catch (error) {
+            return null
+        }
+    }
+
     async getAll(): Promise<MedicoDTO[]> {
         const medicosDisponiveis: MedicoDTO[] = []
 

@@ -3,17 +3,17 @@ import { IExpediente } from '../../../DTOs/Medico'
 import { AppError } from '../../../errors/AppError'
 import { IConsultaRepository } from '../../../infra/repository/consulta/IConsulta.Repository'
 import { IPacienteRepository } from '../../../infra/repository/paciente/IPaciente.Repository'
+import { IMedicoRepository } from '../../../infra/repository/medicos/imedico.repository'
 
 import { convertToUTCDate } from '../../../utils/convertToUTCDate'
-interface IConsulta {
-    startTime: Date,
-    endTime: Date
-}
+import { getConsultaDurationByEspecialidade } from '../../../utils/durationHelper'
+import { notificationService } from '../../../infra/services/NotificationService'
 
 export class PostConsultaUseCase {
     constructor(
         private consultaRepository: IConsultaRepository,
         private pacienteRepository: IPacienteRepository,
+        private medicoRepository: IMedicoRepository
     ) { }
 
     private diasSemana = [
@@ -26,17 +26,59 @@ export class PostConsultaUseCase {
         'Sábado',
     ]
 
-
-
     async execute(consultaDTO: ConsultaDTO) {
-        const trabalhaNesseHorario = await this.checkTrabalhaNesseDia(consultaDTO)
-
-        if (!trabalhaNesseHorario) {
-            throw new AppError(
-                'O horário da consulta está fora do horário de trabalho do médico'
-            )
+        // Obter o médico para calcular as durações e verificar expediente
+        const medico = await this.medicoRepository.getMedicoById(consultaDTO.medicoId)
+        if (!medico) {
+            throw new AppError('Médico não encontrado')
         }
 
+        const dataAgendamento = new Date(consultaDTO.dataAgendamento)
+        const durationMinutes = getConsultaDurationByEspecialidade(medico.especialidade)
+
+        // Definir startTime e endTime da nova consulta
+        const novaConsultaStart = new Date(dataAgendamento.getTime())
+        const novaConsultaEnd = new Date(dataAgendamento.getTime() + durationMinutes * 60000)
+
+        const currentDate = new Date()
+        if (novaConsultaStart < currentDate) {
+            throw new AppError('Não é possível agendar consultas no passado')
+        }
+
+        // Verifica se trabalha nesse dia e horário
+        const expediente = medico.expediente as IExpediente
+        const diaDaSemana = this.diasSemana[novaConsultaStart.getDay()]
+        const trabalhaNesseDia = expediente.diasSemana.includes(diaDaSemana)
+
+        if (!trabalhaNesseDia) {
+            throw new AppError('O horário da consulta está fora do horário de trabalho do médico')
+        }
+
+        const expedienteStart = convertToUTCDate(novaConsultaStart, expediente.horarioAntedimento.start)
+        const expedienteEnd = convertToUTCDate(novaConsultaStart, expediente.horarioAntedimento.end)
+
+        if (novaConsultaStart < expedienteStart || novaConsultaEnd > expedienteEnd) {
+            throw new AppError('O horário da consulta está fora do horário de trabalho do médico')
+        }
+
+        // Verificar conflitos de horário com outras consultas do mesmo médico
+        const consultasDoMedico = await this.consultaRepository.getConsultaPorMedicoId(medico.id!)
+        
+        const temConflito = consultasDoMedico.some(c => {
+            const existingStart = new Date(c.dataAgendamento)
+            const especialidadeConsultaExistente = c.medico.especialidade || medico.especialidade // Fallback
+            const existingDuration = getConsultaDurationByEspecialidade(especialidadeConsultaExistente)
+            const existingEnd = new Date(existingStart.getTime() + existingDuration * 60000)
+
+            // Checa sobreposição: Start1 < End2 e End1 > Start2
+            return novaConsultaStart < existingEnd && novaConsultaEnd > existingStart
+        })
+
+        if (temConflito) {
+            throw new AppError('O horário da consulta está em conflito com a agenda do médico')
+        }
+
+        // Registrar o paciente e a consulta
         const paciente = await this.pacienteRepository.register(consultaDTO.paciente)
 
         if (paciente) {
@@ -46,94 +88,14 @@ export class PostConsultaUseCase {
                 paciente: paciente
             }
 
-            const isAgendanmentoConflitante = await this.consultaRepository.getConsulta(consulta)
-
-            if (isAgendanmentoConflitante) {
-                throw new AppError(
-                    'O horário da consulta está em conflito com a agenda do médico'
-                )
+            const novaConsulta = await this.consultaRepository.register(consulta)
+            
+            if (novaConsulta) {
+                // Enviar notificação assíncrona ao médico (simulado com EventEmitter)
+                notificationService.notifyConsultaAgendada(medico, novaConsulta)
             }
 
-            return await this.consultaRepository.register(consulta)
+            return novaConsulta
         }
-    }
-
-    private async checkTrabalhaNesseDia(consultaDTO: ConsultaDTO) {
-        const currentDate = new Date()
-        const dataAgendamento = new Date(consultaDTO.dataAgendamento)
-        const consultasDisponiveis = await this.getAllConsultas(dataAgendamento, consultaDTO.medicoId);
-        const medicosDisponiveis = await this.getAllMedicosDisponiveis(dataAgendamento);
-        let result: IConsulta[] = [];
-
-        if (consultasDisponiveis.length > 0)
-            result = consultasDisponiveis
-        else
-            result = medicosDisponiveis
-
-        const naoTemConflito = result.some(({ startTime, endTime }) => {
-            if (startTime === undefined || endTime === undefined) return false
-            if (dataAgendamento < currentDate) return false
-            return dataAgendamento >= startTime && dataAgendamento <= endTime
-        })
-
-        return naoTemConflito;
-    }
-
-    private async getAllConsultas(date: Date, medicoId: string): Promise<IConsulta[]> {
-        const result: IConsulta[] = [];
-
-        const consultas = await this.consultaRepository.getConsultaPorMedicoId(medicoId)
-
-        const diaDaSemana = this.diasSemana[date.getDay()]
-
-        consultas.map((consulta) => {
-            if (consulta) {
-                const expediente: IExpediente = JSON.parse(consulta.medico.expediente)
-
-                const trabalhaNesseDia = expediente.diasSemana.includes(diaDaSemana)
-                if (trabalhaNesseDia) {
-                    const startTime = convertToUTCDate(
-                        consulta.dataAgendamento,
-                        expediente.horarioAntedimento.start,
-                    )
-                    const endTime = convertToUTCDate(
-                        consulta.dataAgendamento,
-                        expediente.horarioAntedimento.end,
-                    )
-                    result.push({
-                        startTime,
-                        endTime
-                    })
-                }
-            }
-        })
-
-        return result;
-    }
-
-    private async getAllMedicosDisponiveis(date: Date) {
-        const result: IConsulta[] = [];
-        const medicos = await this.consultaRepository.getAllMedicos()
-
-        console.log(JSON.stringify(medicos))
-
-        const diaDaSemana = this.diasSemana[date.getDay()]
-
-        medicos.map((medico) => {
-            const expediente = medico.expediente
-            const trabalhaNesseDia = expediente.diasSemana.includes(diaDaSemana)
-
-            if (trabalhaNesseDia) {
-                const startTime = convertToUTCDate(date, expediente.horarioAntedimento.start)
-                const endTime = convertToUTCDate(date, expediente.horarioAntedimento.end)
-
-                result.push({
-                    startTime,
-                    endTime
-                })
-            }
-        })
-
-        return result;
     }
 }

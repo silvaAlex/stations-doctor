@@ -12,6 +12,7 @@ export interface IConsultaPorMedicoId {
   dataAgendamento: Date
   medico: {
     expediente: string,
+    especialidade: string,
   }
 }
 
