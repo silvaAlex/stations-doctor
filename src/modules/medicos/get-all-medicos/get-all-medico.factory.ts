@@ -1,4 +1,4 @@
-import { MedicoRepository } from '../../../infra/repository/medicos/Medico.Repository'
+import { MedicoRepository } from '../../../infra/repository/medicos/medico.repository'
 import { GetAllMedicosUseCase } from './get-all-medico.useCase'
 import { GetAllMedicosController } from './get-all-medico.controller'
 

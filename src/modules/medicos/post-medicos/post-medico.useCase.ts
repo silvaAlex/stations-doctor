@@ -1,5 +1,5 @@
 import { MedicoDTO } from '../../../DTOs/Medico'
-import { IMedicoRepository } from '../../../infra/repository/medicos/IMedico.Repository'
+import { IMedicoRepository } from '../../../infra/repository/medicos/imedico.repository'
 
 export class PostMedicoUseCase {
   constructor(private medicoRepository: IMedicoRepository) {}
