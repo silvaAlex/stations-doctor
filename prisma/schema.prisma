@@ -35,3 +35,10 @@ model Consulta {
   medico          Medico   @relation(fields: [medicoId], references: [id])
   paciente        Paciente @relation(fields: [pacienteId], references: [id])
 }
+
+model Admin {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  email     String   @unique
+  password  String
+}

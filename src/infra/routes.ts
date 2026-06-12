@@ -5,13 +5,20 @@ import { CreateConsultaFactory } from '../modules/consultas/post-consulta/post-c
 import { GetConsultasPorMedicoConntroller } from '../modules/consultas/medicos/get-consultaspormedico.controller'
 import { GetConsultasPorPacienteConntroller } from '../modules/consultas/pacientes/get-consultasporpaciente.controller'
 
+import { loginFactory } from '../modules/auth/login/login.factory'
+import { authMiddleware } from './middlewares/auth.middleware'
+
 const router = Router()
+
+router.post('/login', (request: Request, response) => {
+    loginFactory().handle(request, response)
+})
 
 router.get('/medicos/getMedico', (request: Request, response) => {
   GetMedicoFactory().handler(request, response)
 })
 
-router.post('/medicos/register', (request: Request, response) => {
+router.post('/medicos/register', authMiddleware, (request: Request, response) => {
   CreateMedicoFactory().handler(request, response)
 })
 
