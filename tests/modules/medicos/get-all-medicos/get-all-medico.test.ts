@@ -1,13 +1,15 @@
-import { MedicoDTO } from '../../../DTOs/Medico'
-import { IMedicoRepository } from '../../../infra/repository/medicos/imedico.repository'
-import { MockMedicoRepository } from '../../../infra/repository/medicos/MockMedico.Repository'
-import { GetAllMedicosUseCase } from './get-all-medico.useCase'
+import { describe, it, before } from 'node:test'
+import assert from 'node:assert/strict'
+import { MedicoDTO } from '../../../../src/DTOs/Medico'
+import { IMedicoRepository } from '../../../../src/infra/repository/medicos/imedico.repository'
+import { MockMedicoRepository } from '../../../../src/infra/repository/medicos/MockMedico.Repository'
+import { GetAllMedicosUseCase } from '../../../../src/modules/medicos/get-all-medicos/get-all-medico.useCase'
 
 describe('GET Medico UseCase', () => {
   let getAllMedicosUseCase: GetAllMedicosUseCase
   let mockMedicosRepository: IMedicoRepository
 
-  beforeAll(async () => {
+  before(async () => {
     mockMedicosRepository = new MockMedicoRepository()
     getAllMedicosUseCase = new GetAllMedicosUseCase(mockMedicosRepository)
 
@@ -32,11 +34,11 @@ describe('GET Medico UseCase', () => {
 
     const medicos = await getAllMedicosUseCase.execute(date)
 
-    expect(Array.isArray(medicos)).toBeTruthy()
+    assert.ok(Array.isArray(medicos), 'Should be an array')
     if (medicos.length > 0) {
-      expect(medicos[0]).toHaveProperty('nomeMedico')
-      expect(medicos[0]).toHaveProperty('crm')
-      expect(medicos[0]).toHaveProperty('especialidade')
+      assert.ok('nomeMedico' in medicos[0])
+      assert.ok('crm' in medicos[0])
+      assert.ok('especialidade' in medicos[0])
     }
   })
 })

@@ -1,13 +1,15 @@
-import { MedicoDTO } from '../../../DTOs/Medico'
-import { IMedicoRepository } from '../../../infra/repository/medicos/imedico.repository'
-import { MockMedicoRepository } from '../../../infra/repository/medicos/MockMedico.Repository'
-import { PostMedicoUseCase } from './post-medico.useCase'
+import { describe, it, before } from 'node:test'
+import assert from 'node:assert/strict'
+import { MedicoDTO } from '../../../../src/DTOs/Medico'
+import { IMedicoRepository } from '../../../../src/infra/repository/medicos/imedico.repository'
+import { MockMedicoRepository } from '../../../../src/infra/repository/medicos/MockMedico.Repository'
+import { PostMedicoUseCase } from '../../../../src/modules/medicos/post-medicos/post-medico.useCase'
 
 describe('POST Medico UseCase', () => {
   let mockMedicoRepository: IMedicoRepository
   let useCase: PostMedicoUseCase
 
-  beforeAll(() => {
+  before(() => {
     mockMedicoRepository = new MockMedicoRepository()
     useCase = new PostMedicoUseCase(mockMedicoRepository)
   })
@@ -27,7 +29,7 @@ describe('POST Medico UseCase', () => {
     }
     const result = await useCase.execute(userData)
 
-    expect(result).toEqual(userData)
+    assert.deepEqual(result, userData)
   })
 
   it('não deve inserir um novo Medico com o mesmo CRM', async () => {
@@ -44,8 +46,14 @@ describe('POST Medico UseCase', () => {
       },
     }
 
-    await expect(useCase.execute(userData))
-      .rejects
-      .toThrow('Medico já existe!')
+    await assert.rejects(
+      async () => {
+        await useCase.execute(userData)
+      },
+      (err: Error) => {
+        assert.strictEqual(err.message, 'Medico já existe!')
+        return true
+      }
+    )
   })
 })

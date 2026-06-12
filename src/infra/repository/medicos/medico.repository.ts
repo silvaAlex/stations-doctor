@@ -1,6 +1,6 @@
 import { prismaClient } from '../../../../prisma/prismaClient'
 import { MedicoDTO } from '../../../DTOs/Medico'
-import { convertToUTCDate } from '../../../utils/Utils'
+import { convertToUTCDate } from '../../../utils/convertToUTCDate'
 import { IMedicoRepository } from './imedico.repository'
 
 export class MedicoRepository implements IMedicoRepository {

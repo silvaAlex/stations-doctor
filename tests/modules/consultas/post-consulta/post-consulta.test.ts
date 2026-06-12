@@ -1,12 +1,14 @@
-import { ConsultaDTO } from '../../../DTOs/Consulta'
-import { MedicoDTO } from '../../../DTOs/Medico'
-import { IConsultaRepository } from '../../../infra/repository/consulta/IConsulta.Repository'
-import { MockConsultaRepository } from '../../../infra/repository/consulta/MockConsulta.Repository'
-import { IMedicoRepository } from '../../../infra/repository/medicos/imedico.repository'
-import { MockMedicoRepository } from '../../../infra/repository/medicos/MockMedico.Repository'
-import { IPacienteRepository } from '../../../infra/repository/paciente/IPaciente.Repository'
-import { MockPacienteRepository } from '../../../infra/repository/paciente/MockPaciente.Repository'
-import { PostConsultaUseCase } from './post-consulta.useCase'
+import { describe, it, before } from 'node:test'
+import assert from 'node:assert/strict'
+import { ConsultaDTO } from '../../../../src/DTOs/Consulta'
+import { MedicoDTO } from '../../../../src/DTOs/Medico'
+import { IConsultaRepository } from '../../../../src/infra/repository/consulta/IConsulta.Repository'
+import { MockConsultaRepository } from '../../../../src/infra/repository/consulta/MockConsulta.Repository'
+import { IMedicoRepository } from '../../../../src/infra/repository/medicos/imedico.repository'
+import { MockMedicoRepository } from '../../../../src/infra/repository/medicos/MockMedico.Repository'
+import { IPacienteRepository } from '../../../../src/infra/repository/paciente/IPaciente.Repository'
+import { MockPacienteRepository } from '../../../../src/infra/repository/paciente/MockPaciente.Repository'
+import { PostConsultaUseCase } from '../../../../src/modules/consultas/post-consulta/post-consulta.useCase'
 
 describe('POST Consulta UseCase', () => {
     let mockMedicoRepository: IMedicoRepository
@@ -14,7 +16,7 @@ describe('POST Consulta UseCase', () => {
     let mockConsultaRepository: IConsultaRepository
     let useCase: PostConsultaUseCase
 
-    beforeAll(() => {
+    before(() => {
         const userData: MedicoDTO = {
             nomeMedico: 'Fernanda',
             especialidade: 'Cardiologista',
@@ -51,8 +53,14 @@ describe('POST Consulta UseCase', () => {
                 dataAgendamento: date,
             }
 
-            await expect(useCase.execute(userData)).rejects.toThrow(
-                'O horário da consulta está fora do horário de trabalho do médico',
+            await assert.rejects(
+                async () => {
+                    await useCase.execute(userData)
+                },
+                (err: Error) => {
+                    assert.strictEqual(err.message, 'O horário da consulta está fora do horário de trabalho do médico')
+                    return true
+                }
             )
         }
     })
@@ -83,8 +91,14 @@ describe('POST Consulta UseCase', () => {
 
             await useCase.execute(userData1)
 
-            await expect(useCase.execute(userData2)).rejects.toThrow(
-                'O horário da consulta está em conflito com a agenda do médico'
+            await assert.rejects(
+                async () => {
+                    await useCase.execute(userData2)
+                },
+                (err: Error) => {
+                    assert.strictEqual(err.message, 'O horário da consulta está em conflito com a agenda do médico')
+                    return true
+                }
             )
         }
     })
@@ -104,7 +118,7 @@ describe('POST Consulta UseCase', () => {
             }
 
             const consulta = await useCase.execute(userData1)
-            expect(consulta?.id).toHaveProperty('id')
+            assert.ok(consulta?.id !== undefined, 'consulta deve ter id')
         }
     })
 })
