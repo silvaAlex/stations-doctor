@@ -10,7 +10,7 @@ Trata-se de uma aplicação que permite o agendamento de Consultas Médicas
 
 ## Detalhes do Desafio
 
-- [ ] Cada consulta tem uma duração média de 20 a 60 minutos, dependendo da especialidade.
+- [x] Cada consulta tem uma duração média de 20 a 60 minutos, dependendo da especialidade.
 - [x] Consultas só podem ser agendadas durante o horário de trabalho do médico.
 - [x] Um médico não pode ter duas consultas marcadas para o mesmo horário.
 - [x] Não é permitido cadastrar consultas em feriados.
@@ -53,9 +53,9 @@ Trata-se de uma aplicação que permite o agendamento de Consultas Médicas
 
 ## Pontos a serem melhorados
 
-- [] criar rotas autenticadas para cadastro de medicos
-- [] criar um envio de notificação para o medico quando uma consulta for agendada
-- [] lembrar o paciente se ele possui uma consulta naquele dia
+- [x] criar rotas autenticadas para cadastro de medicos
+- [x] criar um envio de notificação para o medico quando uma consulta for agendada
+- [x] lembrar o paciente se ele possui uma consulta naquele dia
 
 ## como rodar a aplicação
 
