@@ -71,7 +71,7 @@ export class MedicoRepository implements IMedicoRepository {
             },
         })
 
-        medicos.map((medico: { nomeMedico: any; crm: any; especialidade: any; expediente: string }) => {
+        medicos.map((medico: { nomeMedico: string; crm: string; especialidade: string; expediente: string }) => {
             medicosDisponiveis.push({
                 nomeMedico: medico.nomeMedico,
                 crm: medico.crm,
